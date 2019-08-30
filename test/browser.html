@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<meta name=viewport content='width=device-width, initial-scale=1'>
+<title>parse-css browser demo</title>
+
+(check the browser’s console…)
+
+<script type=module>
+  import {parseAStylesheet} from '../index.js'
+
+  console.log(
+    parseAStylesheet('div { color: lime }')
+  )
+</script>
