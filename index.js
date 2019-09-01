@@ -947,13 +947,6 @@ export const tokenize = (str = '') => {
 }
 
 // Token objects
-/*
-function CSSParserToken() { throw 'Abstract Base Class' }
-CSSParserToken.prototype.toJSON = function() { return {token: this.tokenType} }
-CSSParserToken.prototype.toString = function() { return this.tokenType }
-CSSParserToken.prototype.toSource = function() { return '' + this }
-*/
-
 class CSSParserToken {
   constructor() {
     if (this.constructor === CSSParserToken) {
@@ -964,20 +957,6 @@ class CSSParserToken {
   toString() { return this.tokenType }
   toSource() { return '' + this }
 }
-
-/*
-function StringValuedToken() { throw 'Abstract Base Class' }
-StringValuedToken.prototype = Object.create(CSSParserToken.prototype)
-StringValuedToken.prototype.ASCIIMatch = function(str = '') {
-  return this.value.toLowerCase() === str.toLowerCase()
-}
-StringValuedToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-
-  return json
-}
-*/
 
 class StringValuedToken extends CSSParserToken {
   constructor() {
@@ -996,10 +975,6 @@ class StringValuedToken extends CSSParserToken {
   }
 }
 
-/*
-function GroupingToken() { throw 'Abstract Base Class' }
-GroupingToken.prototype = Object.create(CSSParserToken.prototype)
-*/
 class GroupingToken extends CSSParserToken {
   constructor() {
     super()
@@ -1011,17 +986,6 @@ class GroupingToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-ident-token
-/*
-function IdentToken(val) {
-  this.value = val
-}
-IdentToken.prototype = Object.create(StringValuedToken.prototype)
-IdentToken.prototype.tokenType = 'IDENT'
-IdentToken.prototype.toString = function() { return `IDENT(${this.value})` }
-IdentToken.prototype.toSource = function() {
-  return escapeIdent(this.value)
-}
-*/
 class IdentToken extends StringValuedToken {
   tokenType = 'IDENT'
 
@@ -1035,18 +999,6 @@ class IdentToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-function-token
-/*
-function FunctionToken(val) {
-  this.value = val
-  this.mirror = ')'
-}
-FunctionToken.prototype = Object.create(StringValuedToken.prototype)
-FunctionToken.prototype.tokenType = 'FUNCTION'
-FunctionToken.prototype.toString = function() { return `FUNCTION(${this.value})` }
-FunctionToken.prototype.toSource = function() {
-  return escapeIdent(this.value) + '('
-}
-*/
 class FunctionToken extends StringValuedToken {
   tokenType = 'FUNCTION'
   mirror = ')'
@@ -1061,17 +1013,6 @@ class FunctionToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-at-keyword-token
-/*
-function AtKeywordToken(val) {
-  this.value = val
-}
-AtKeywordToken.prototype = Object.create(StringValuedToken.prototype)
-AtKeywordToken.prototype.tokenType = 'AT-KEYWORD'
-AtKeywordToken.prototype.toString = function() { return `AT(${this.value})` }
-AtKeywordToken.prototype.toSource = function() {
-  return '@' + escapeIdent(this.value)
-}
-*/
 class AtKeywordToken extends StringValuedToken {
   tokenType = 'AT-KEYWORD'
 
@@ -1085,31 +1026,6 @@ class AtKeywordToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-hash-token
-/*
-function HashToken(val) {
-  this.value = val
-  this.type = 'unrestricted'
-}
-HashToken.prototype = Object.create(StringValuedToken.prototype)
-HashToken.prototype.tokenType = 'HASH'
-HashToken.prototype.toString = function() { return `HASH(${this.value})` }
-HashToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-  json.type = this.type
-
-  return json
-}
-HashToken.prototype.toSource = function() {
-  if (this.type === 'id') {
-    return '#' + escapeIdent(this.value)
-  }
-
-  else {
-    return '#' + escapeHash(this.value)
-  }
-}
-*/
 class HashToken extends StringValuedToken {
   tokenType = 'HASH'
 
@@ -1139,16 +1055,6 @@ class HashToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-string-token
-/*
-function StringToken(val) {
-  this.value = val
-}
-StringToken.prototype = Object.create(StringValuedToken.prototype)
-StringToken.prototype.tokenType = 'STRING'
-StringToken.prototype.toString = function() {
-  return `"${escapeString(this.value)}"`
-}
-*/
 class StringToken extends StringValuedToken {
   tokenType = 'STRING'
 
@@ -1161,11 +1067,6 @@ class StringToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-string-token
-/*
-function BadStringToken() { return this }
-BadStringToken.prototype = Object.create(CSSParserToken.prototype)
-BadStringToken.prototype.tokenType = 'BADSTRING'
-*/
 class BadStringToken extends CSSParserToken {
   tokenType = 'BADSTRING'
 
@@ -1175,17 +1076,6 @@ class BadStringToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-url-token
-/*
-function URLToken(val) {
-  this.value = val
-}
-URLToken.prototype = Object.create(StringValuedToken.prototype)
-URLToken.prototype.tokenType = 'URL'
-URLToken.prototype.toString = function() { return `URL(${this.value})` }
-URLToken.prototype.toSource = function() {
-  return `url("${escapeString(this.value)}")`
-}
-*/
 class URLToken extends StringValuedToken {
   tokenType = 'URL'
 
@@ -1199,11 +1089,6 @@ class URLToken extends StringValuedToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-url-token
-/*
-function BadURLToken() { return this }
-BadURLToken.prototype = Object.create(CSSParserToken.prototype)
-BadURLToken.prototype.tokenType = 'BADURL'
-*/
 class BadURLToken extends CSSParserToken {
   tokenType = 'BADURL'
 
@@ -1213,30 +1098,6 @@ class BadURLToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-delim-token
-/*
-function DelimToken(code) {
-  this.value = stringFromCode(code)
-  return this
-}
-DelimToken.prototype = Object.create(CSSParserToken.prototype)
-DelimToken.prototype.tokenType = 'DELIM'
-DelimToken.prototype.toString = function() { return `DELIM(${this.value})` }
-DelimToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-
-  return json
-}
-DelimToken.prototype.toSource = function() {
-  if (this.value === '\\') {
-    return '\\\n'
-  }
-
-  else {
-    return this.value
-  }
-}
-*/
 class DelimToken extends CSSParserToken {
   tokenType = 'DELIM'
 
@@ -1264,31 +1125,6 @@ class DelimToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-number-token
-/*
-function NumberToken() {
-  this.value = null
-  this.type = 'integer'
-  this.repr = ''
-}
-NumberToken.prototype = Object.create(CSSParserToken.prototype)
-NumberToken.prototype.tokenType = 'NUMBER'
-NumberToken.prototype.toString = function() {
-  if (this.type === 'integer') {
-    return `INT(${this.value})`
-  }
-
-  return `NUMBER(${this.value})`
-}
-NumberToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-  json.type = this.type
-  json.repr = this.repr
-
-  return json
-}
-NumberToken.prototype.toSource = function() { return this.repr }
-*/
 class NumberToken extends CSSParserToken {
   tokenType = 'NUMBER'
 
@@ -1318,23 +1154,6 @@ class NumberToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-percentage-token
-/*
-function PercentageToken() {
-  this.value = null
-  this.repr = ''
-}
-PercentageToken.prototype = Object.create(CSSParserToken.prototype)
-PercentageToken.prototype.tokenType = 'PERCENTAGE'
-PercentageToken.prototype.toString = function() { return `PERCENTAGE(${this.value})` }
-PercentageToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-  json.repr = this.repr
-
-  return json
-}
-PercentageToken.prototype.toSource = function() { return this.repr + '%' }
-*/
 class PercentageToken extends CSSParserToken {
   tokenType = 'PERCENTAGE'
 
@@ -1356,44 +1175,6 @@ class PercentageToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-dimension-token
-/*
-function DimensionToken() {
-  this.value = null
-  this.type = 'integer'
-  this.repr = ''
-  this.unit = ''
-}
-DimensionToken.prototype = Object.create(CSSParserToken.prototype)
-DimensionToken.prototype.tokenType = 'DIMENSION'
-DimensionToken.prototype.toString = function() { return `DIM(${this.value},${this.unit})` }
-DimensionToken.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.value = this.value
-  json.type = this.type
-  json.repr = this.repr
-  json.unit = this.unit
-
-  return json
-}
-DimensionToken.prototype.toSource = function() {
-  const source = this.repr
-  let unit = escapeIdent(this.unit)
-
-  if (
-    unit[0].toLowerCase() === 'e'
-    && (
-      unit[1] === '-'
-      || digit(unit.charCodeAt(1))
-    )
-  ) {
-    // Unit is ambiguous with scientific notation
-    // Remove the leading "e", replace with escape
-    unit = '\\65 ' + unit.slice(1, unit.length)
-  }
-
-  return source + unit
-}
-*/
 class DimensionToken extends CSSParserToken {
   tokenType = 'DIMENSION'
 
@@ -1436,13 +1217,6 @@ class DimensionToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-whitespace-token
-/*
-function WhitespaceToken() { return this }
-WhitespaceToken.prototype = Object.create(CSSParserToken.prototype)
-WhitespaceToken.prototype.tokenType = 'WHITESPACE'
-WhitespaceToken.prototype.toString = function() { return 'WS' }
-WhitespaceToken.prototype.toSource = function() { return ' ' }
-*/
 class WhitespaceToken extends CSSParserToken {
   tokenType = 'WHITESPACE'
 
@@ -1454,12 +1228,6 @@ class WhitespaceToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdo-token
-/*
-function CDOToken() { return this }
-CDOToken.prototype = Object.create(CSSParserToken.prototype)
-CDOToken.prototype.tokenType = 'CDO'
-CDOToken.prototype.toSource = function() { return '<!--' }
-*/
 class CDOToken extends CSSParserToken {
   tokenType = 'CDO'
 
@@ -1470,12 +1238,6 @@ class CDOToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdc-token
-/*
-function CDCToken() { return this }
-CDCToken.prototype = Object.create(CSSParserToken.prototype)
-CDCToken.prototype.tokenType = 'CDC'
-CDCToken.prototype.toSource = function() { return '-->' }
-*/
 class CDCToken extends CSSParserToken {
   tokenType = 'CDC'
 
@@ -1487,11 +1249,6 @@ class CDCToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-colon-token
-/*
-function ColonToken() { return this }
-ColonToken.prototype = Object.create(CSSParserToken.prototype)
-ColonToken.prototype.tokenType = ':'
-*/
 class ColonToken extends CSSParserToken {
   tokenType = ':'
 
@@ -1501,11 +1258,6 @@ class ColonToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-semicolon-token
-/*
-function SemicolonToken() { return this }
-SemicolonToken.prototype = Object.create(CSSParserToken.prototype)
-SemicolonToken.prototype.tokenType = ';'
-*/
 class SemicolonToken extends CSSParserToken {
   tokenType = ';'
 
@@ -1515,11 +1267,6 @@ class SemicolonToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-comma-token
-/*
-function CommaToken() { return this }
-CommaToken.prototype = Object.create(CSSParserToken.prototype)
-CommaToken.prototype.tokenType = ','
-*/
 class CommaToken extends CSSParserToken {
   tokenType = ','
 
@@ -1529,15 +1276,6 @@ class CommaToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-square
-/*
-function OpenSquareToken() {
-  this.value = '['
-  this.mirror = ']'
-  return this
-}
-OpenSquareToken.prototype = Object.create(GroupingToken.prototype)
-OpenSquareToken.prototype.tokenType = '['
-*/
 class OpenSquareToken extends GroupingToken {
   tokenType = '['
 
@@ -1550,15 +1288,6 @@ class OpenSquareToken extends GroupingToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-square
-/*
-function CloseSquareToken() {
-  this.value = ']'
-  this.mirror = '['
-  return this
-}
-CloseSquareToken.prototype = Object.create(GroupingToken.prototype)
-CloseSquareToken.prototype.tokenType = ']'
-*/
 class CloseSquareToken extends GroupingToken {
   tokenType = ']'
 
@@ -1571,15 +1300,6 @@ class CloseSquareToken extends GroupingToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-paren
-/*
-function OpenParenToken() {
-  this.value = '('
-  this.mirror = ')'
-  return this
-}
-OpenParenToken.prototype = Object.create(GroupingToken.prototype)
-OpenParenToken.prototype.tokenType = '('
-*/
 class OpenParenToken extends GroupingToken {
   tokenType = '('
 
@@ -1592,15 +1312,6 @@ class OpenParenToken extends GroupingToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-paren
-/*
-function CloseParenToken() {
-  this.value = ')'
-  this.mirror = '('
-  return this
-}
-CloseParenToken.prototype = Object.create(GroupingToken.prototype)
-CloseParenToken.prototype.tokenType = ')'
-*/
 class CloseParenToken extends GroupingToken {
   tokenType = ')'
 
@@ -1613,15 +1324,6 @@ class CloseParenToken extends GroupingToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-curly
-/*
-function OpenCurlyToken() {
-  this.value = '{'
-  this.mirror = '}'
-  return this
-}
-OpenCurlyToken.prototype = Object.create(GroupingToken.prototype)
-OpenCurlyToken.prototype.tokenType = '{'
-*/
 class OpenCurlyToken extends GroupingToken {
   tokenType = '{'
 
@@ -1634,15 +1336,6 @@ class OpenCurlyToken extends GroupingToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-curly
-/*
-function CloseCurlyToken() {
-  this.value = '}'
-  this.mirror = '{'
-  return this
-}
-CloseCurlyToken.prototype = Object.create(GroupingToken.prototype)
-CloseCurlyToken.prototype.tokenType = '}'
-*/
 class CloseCurlyToken extends GroupingToken {
   tokenType = '}'
 
@@ -1654,12 +1347,7 @@ class CloseCurlyToken extends GroupingToken {
   }
 }
 
-// Misc tokens
-/*
-function IncludeMatchToken() { return this }
-IncludeMatchToken.prototype = Object.create(CSSParserToken.prototype)
-IncludeMatchToken.prototype.tokenType = '~='
-*/
+// https://drafts.csswg.org/selectors-4/#attribute-representation
 class IncludeMatchToken extends CSSParserToken {
   tokenType = '~='
 
@@ -1668,11 +1356,6 @@ class IncludeMatchToken extends CSSParserToken {
   }
 }
 
-/*
-function DashMatchToken() { return this }
-DashMatchToken.prototype = Object.create(CSSParserToken.prototype)
-DashMatchToken.prototype.tokenType = '|='
-*/
 class DashMatchToken extends CSSParserToken {
   tokenType = '|='
 
@@ -1681,11 +1364,7 @@ class DashMatchToken extends CSSParserToken {
   }
 }
 
-/*
-function PrefixMatchToken() { return this }
-PrefixMatchToken.prototype = Object.create(CSSParserToken.prototype)
-PrefixMatchToken.prototype.tokenType = '^='
-*/
+// https://drafts.csswg.org/selectors-4/#attribute-substrings
 class PrefixMatchToken extends CSSParserToken {
   tokenType = '^='
 
@@ -1694,11 +1373,6 @@ class PrefixMatchToken extends CSSParserToken {
   }
 }
 
-/*
-function SuffixMatchToken() { return this }
-SuffixMatchToken.prototype = Object.create(CSSParserToken.prototype)
-SuffixMatchToken.prototype.tokenType = '$='
-*/
 class SuffixMatchToken extends CSSParserToken {
   tokenType = '$='
 
@@ -1707,11 +1381,6 @@ class SuffixMatchToken extends CSSParserToken {
   }
 }
 
-/*
-function SubstringMatchToken() { return this }
-SubstringMatchToken.prototype = Object.create(CSSParserToken.prototype)
-SubstringMatchToken.prototype.tokenType = '*='
-*/
 class SubstringMatchToken extends CSSParserToken {
   tokenType = '*='
 
@@ -1720,11 +1389,7 @@ class SubstringMatchToken extends CSSParserToken {
   }
 }
 
-/*
-function ColumnToken() { return this }
-ColumnToken.prototype = Object.create(CSSParserToken.prototype)
-ColumnToken.prototype.tokenType = '||'
-*/
+// https://drafts.csswg.org/selectors-4/#the-column-combinator
 class ColumnToken extends CSSParserToken {
   tokenType = '||'
 
@@ -1734,12 +1399,6 @@ class ColumnToken extends CSSParserToken {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-eof-token
-/*
-function EOFToken() { return this }
-EOFToken.prototype = Object.create(CSSParserToken.prototype)
-EOFToken.prototype.tokenType = 'EOF'
-EOFToken.prototype.toSource = function() { return '' }
-*/
 class EOFToken extends CSSParserToken {
   tokenType = 'EOF'
 
@@ -1750,13 +1409,6 @@ class EOFToken extends CSSParserToken {
 }
 
 // Escaping functions
-/*
-function InvalidCharacterError(message) {
-  this.message = message
-}
-InvalidCharacterError.prototype = new Error
-InvalidCharacterError.prototype.name = 'InvalidCharacterError'
-*/
 class InvalidCharacterError extends Error {
   name = 'InvalidCharacterError'
 
@@ -1880,35 +1532,6 @@ const escapeString = (str = '') => {
 }
 
 // Token stream
-/*
-function TokenStream(tokens = []) {
-  this.tokens = tokens
-  this.i = -1
-}
-TokenStream.prototype.tokenAt = function(i) {
-  if (i < this.tokens.length) {
-    return this.tokens[i]
-  }
-
-  return new EOFToken()
-}
-TokenStream.prototype.consume = function(num) {
-  if (num === undefined) {
-    num = 1
-  }
-
-  this.i += num
-  this.token = this.tokenAt(this.i)
-
-  return true
-}
-TokenStream.prototype.next = function() {
-  return this.tokenAt(this.i + 1)
-}
-TokenStream.prototype.reconsume = function() {
-  this.i--
-}
-*/
 class TokenStream {
   constructor(value = []) {
     this.tokens = value
@@ -2398,15 +2021,6 @@ export const parseACommaSeparatedListOfComponentValues = (str = '') => {
 }
 
 // Parser objects
-/*
-function CSSParserRule() { throw 'Abstract Base Class' }
-CSSParserRule.prototype.toString = function(indent) {
-  return JSON.stringify(this, null, indent)
-}
-CSSParserRule.prototype.toJSON = function() {
-  return {type: this.type, value: this.value}
-}
-*/
 class CSSParserRule {
   constructor () {
     if (this.constructor === CSSParserRule) {
@@ -2418,14 +2032,6 @@ class CSSParserRule {
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-stylesheet
-/*
-function Stylesheet() {
-  this.value = []
-  return this
-}
-Stylesheet.prototype = Object.create(CSSParserRule.prototype)
-Stylesheet.prototype.type = 'STYLESHEET'
-*/
 class Stylesheet extends CSSParserRule {
   type = 'STYLESHEET'
 
@@ -2437,24 +2043,6 @@ class Stylesheet extends CSSParserRule {
 }
 
 // https://drafts.csswg.org/css-syntax/#at-rule
-/*
-function AtRule(name) {
-  this.name = name
-  this.prelude = []
-  this.value = null
-
-  return this
-}
-AtRule.prototype = Object.create(CSSParserRule.prototype)
-AtRule.prototype.type = 'AT-RULE'
-AtRule.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.name = this.name
-  json.prelude = this.prelude
-
-  return json
-}
-*/
 class AtRule extends CSSParserRule {
   type = 'AT-RULE'
 
@@ -2475,22 +2063,6 @@ class AtRule extends CSSParserRule {
 }
 
 // https://drafts.csswg.org/css-syntax/#qualified-rule
-/*
-function QualifiedRule() {
-  this.prelude = []
-  this.value = []
-
-  return this
-}
-QualifiedRule.prototype = Object.create(CSSParserRule.prototype)
-QualifiedRule.prototype.type = 'QUALIFIED-RULE'
-QualifiedRule.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.prelude = this.prelude
-
-  return json
-}
-*/
 class QualifiedRule extends CSSParserRule {
   type = 'QUALIFIED-RULE'
 
@@ -2509,24 +2081,6 @@ class QualifiedRule extends CSSParserRule {
 }
 
 // https://drafts.csswg.org/css-syntax/#declaration
-/*
-function Declaration(name) {
-  this.name = name
-  this.value = []
-  this.important = false
-
-  return this
-}
-Declaration.prototype = Object.create(CSSParserRule.prototype)
-Declaration.prototype.type = 'DECLARATION'
-Declaration.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.name = this.name
-  json.important = this.important
-
-  return json
-}
-*/
 class Declaration extends CSSParserRule {
   type = 'DECLARATION'
 
@@ -2546,22 +2100,6 @@ class Declaration extends CSSParserRule {
   }
 }
 
-/*
-function SimpleBlock(type) {
-  this.name = type
-  this.value = []
-
-  return this
-}
-SimpleBlock.prototype = Object.create(CSSParserRule.prototype)
-SimpleBlock.prototype.type = 'BLOCK'
-SimpleBlock.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.name = this.name
-
-  return json
-}
-*/
 class SimpleBlock extends CSSParserRule {
   type = 'BLOCK'
 
@@ -2579,22 +2117,6 @@ class SimpleBlock extends CSSParserRule {
   }
 }
 
-/*
-function Func(name) {
-  this.name = name
-  this.value = []
-
-  return this
-}
-Func.prototype = Object.create(CSSParserRule.prototype)
-Func.prototype.type = 'FUNCTION'
-Func.prototype.toJSON = function() {
-  const json = this.constructor.prototype.constructor.prototype.toJSON.call(this)
-  json.name = this.name
-
-  return json
-}
-*/
 class Func extends CSSParserRule {
   type = 'FUNCTION'
 
