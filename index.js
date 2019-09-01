@@ -1064,6 +1064,7 @@ class StringToken extends StringValuedToken {
     this.value = value
   }
   toString() { return `"${escapeString(this.value)}"` }
+  toSource() { return `"${escapeString(this.value)}"` }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-string-token
@@ -1204,7 +1205,7 @@ class DimensionToken extends CSSParserToken {
 
     return source + unit
   }
-  toSource() { return `DIM(${this.value},${this.unit})` }
+  toSource() { return `${String(this.value).replace(/0+\./, '.')}${this.unit}` }
   toJSON() {
     return {
       ...super.toJSON(),
@@ -2021,6 +2022,44 @@ export const parseACommaSeparatedListOfComponentValues = (str = '') => {
 }
 
 // Parser objects
+const flattenTokens = (tokens = []) => {
+  if (
+    Array.isArray(tokens)
+  ) {
+    return tokens
+      .map(token => token.toSource())
+      .join('')
+  } else if (!tokens) {
+    return ';'
+  } else {
+    try {
+      return tokens.toSource()
+    } catch (error) {
+      console.log(tokens, error)
+      return 'error'
+    }
+  }
+}
+
+const spaceTokens = (tokens = []) => {
+  if (
+    Array.isArray(tokens)
+  ) {
+    return tokens
+      .map(token => token.toSource())
+      .join(' ')
+  } else if (!tokens) {
+    return ';'
+  } else {
+    try {
+      return tokens.toSource()
+    } catch (error) {
+      console.log(tokens, error)
+      return 'error'
+    }
+  }
+}
+
 class CSSParserRule {
   constructor () {
     if (this.constructor === CSSParserRule) {
@@ -2029,6 +2068,7 @@ class CSSParserRule {
   }
   toString(value) { return JSON.stringify(this, null, value) }
   toJSON() { return {type: this.type, value: this.value} }
+  toSource() { return this.value }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-stylesheet
@@ -2040,6 +2080,7 @@ class Stylesheet extends CSSParserRule {
 
     this.value = []
   }
+  toSource() { return spaceTokens(this.value).trim() }
 }
 
 // https://drafts.csswg.org/css-syntax/#at-rule
@@ -2060,6 +2101,9 @@ class AtRule extends CSSParserRule {
       prelude: this.prelude
     }
   }
+  toSource() {
+    return `@${this.name}${flattenTokens(this.prelude)}${flattenTokens(this.value)}`
+  }
 }
 
 // https://drafts.csswg.org/css-syntax/#qualified-rule
@@ -2077,6 +2121,9 @@ class QualifiedRule extends CSSParserRule {
       ...super.toJSON(),
       prelude: this.prelude
     }
+  }
+  toSource() {
+    return `${flattenTokens(this.prelude)}${flattenTokens(this.value)}`
   }
 }
 
@@ -2098,6 +2145,9 @@ class Declaration extends CSSParserRule {
       important: this.important
     }
   }
+  toSource() {
+    return `${this.name}:${flattenTokens(this.value)}${this.important ? `!important` : ''}`
+  }
 }
 
 class SimpleBlock extends CSSParserRule {
@@ -2108,12 +2158,20 @@ class SimpleBlock extends CSSParserRule {
 
     this.name = value
     this.value = []
+    this.mirror = ({
+      '(': ')',
+      '{': '}',
+      '[': ']'
+    })[this.name]
   }
   toJSON() {
     return {
       ...super.toJSON(),
       name: this.name
     }
+  }
+  toSource() {
+    return `${this.name}${this.value.map(token => token.toSource()).join('')}${this.mirror}`
   }
 }
 
@@ -2131,6 +2189,9 @@ class Func extends CSSParserRule {
       ...super.toJSON(),
       name: this.name
     }
+  }
+  toSource() {
+    return `${this.name}(${this.value.map(token => token.toSource()).join('')})`
   }
 }
 
