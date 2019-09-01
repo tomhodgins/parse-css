@@ -947,11 +947,25 @@ export const tokenize = (str = '') => {
 }
 
 // Token objects
+/*
 function CSSParserToken() { throw 'Abstract Base Class' }
 CSSParserToken.prototype.toJSON = function() { return {token: this.tokenType} }
 CSSParserToken.prototype.toString = function() { return this.tokenType }
 CSSParserToken.prototype.toSource = function() { return '' + this }
+*/
 
+class CSSParserToken {
+  constructor() {
+    if (this.constructor === CSSParserToken) {
+      throw new Error(`Can't instantiate abstract class`)
+    }
+  }
+  toJSON() { return {token: this.tokenType} }
+  toString() { return this.tokenType }
+  toSource() { return '' + this }
+}
+
+/*
 function StringValuedToken() { throw 'Abstract Base Class' }
 StringValuedToken.prototype = Object.create(CSSParserToken.prototype)
 StringValuedToken.prototype.ASCIIMatch = function(str = '') {
@@ -963,11 +977,41 @@ StringValuedToken.prototype.toJSON = function() {
 
   return json
 }
+*/
 
+class StringValuedToken extends CSSParserToken {
+  constructor() {
+    super()
+
+    if (this.constructor === StringValuedToken) {
+      throw new Error(`Can't instantiate abstract class`)
+    }
+  }
+  ASCIIMatch(string = '') { return this.value.toLowerCase() === string.toLowerCase() }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value
+    }
+  }
+}
+
+/*
 function GroupingToken() { throw 'Abstract Base Class' }
 GroupingToken.prototype = Object.create(CSSParserToken.prototype)
+*/
+class GroupingToken extends CSSParserToken {
+  constructor() {
+    super()
+
+    if (this.constructor === CSSParserToken) {
+      throw new Error(`Can't instantiate abstract class`)
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-ident-token
+/*
 function IdentToken(val) {
   this.value = val
 }
@@ -977,8 +1021,21 @@ IdentToken.prototype.toString = function() { return `IDENT(${this.value})` }
 IdentToken.prototype.toSource = function() {
   return escapeIdent(this.value)
 }
+*/
+class IdentToken extends StringValuedToken {
+  tokenType = 'IDENT'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+  }
+  toString() { return `IDENT(${this.value})` }
+  toSource() { return escapeIdent(this.value) }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-function-token
+/*
 function FunctionToken(val) {
   this.value = val
   this.mirror = ')'
@@ -989,8 +1046,22 @@ FunctionToken.prototype.toString = function() { return `FUNCTION(${this.value})`
 FunctionToken.prototype.toSource = function() {
   return escapeIdent(this.value) + '('
 }
+*/
+class FunctionToken extends StringValuedToken {
+  tokenType = 'FUNCTION'
+  mirror = ')'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+  }
+  toString() { return `FUNCTION(${this.value})` }
+  toSource() { return escapeIdent(this.value) + '(' }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-at-keyword-token
+/*
 function AtKeywordToken(val) {
   this.value = val
 }
@@ -1000,8 +1071,21 @@ AtKeywordToken.prototype.toString = function() { return `AT(${this.value})` }
 AtKeywordToken.prototype.toSource = function() {
   return '@' + escapeIdent(this.value)
 }
+*/
+class AtKeywordToken extends StringValuedToken {
+  tokenType = 'AT-KEYWORD'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+  }
+  toString() { return `AT(${this.value})` }
+  toSource() { return '@' + escapeIdent(this.value) }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-hash-token
+/*
 function HashToken(val) {
   this.value = val
   this.type = 'unrestricted'
@@ -1025,8 +1109,37 @@ HashToken.prototype.toSource = function() {
     return '#' + escapeHash(this.value)
   }
 }
+*/
+class HashToken extends StringValuedToken {
+  tokenType = 'HASH'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+    this.type = 'unrestricted'
+  }
+  toString() { return `HASH(${this.value})` }
+  toSource() {
+    if (this.type === 'id') {
+      return '#' + escapeIdent(this.value)
+    }
+
+    else {
+      return '#' + escapeHash(this.value)
+    }
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value,
+      type: this.type
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-string-token
+/*
 function StringToken(val) {
   this.value = val
 }
@@ -1035,13 +1148,34 @@ StringToken.prototype.tokenType = 'STRING'
 StringToken.prototype.toString = function() {
   return `"${escapeString(this.value)}"`
 }
+*/
+class StringToken extends StringValuedToken {
+  tokenType = 'STRING'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+  }
+  toString() { return `"${escapeString(this.value)}"` }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-string-token
+/*
 function BadStringToken() { return this }
 BadStringToken.prototype = Object.create(CSSParserToken.prototype)
 BadStringToken.prototype.tokenType = 'BADSTRING'
+*/
+class BadStringToken extends CSSParserToken {
+  tokenType = 'BADSTRING'
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-url-token
+/*
 function URLToken(val) {
   this.value = val
 }
@@ -1051,13 +1185,35 @@ URLToken.prototype.toString = function() { return `URL(${this.value})` }
 URLToken.prototype.toSource = function() {
   return `url("${escapeString(this.value)}")`
 }
+*/
+class URLToken extends StringValuedToken {
+  tokenType = 'URL'
+
+  constructor(value) {
+    super()
+
+    this.value = value
+  }
+  toString() { return `URL(${this.value})` }
+  toSource() { return `url("${escapeString(this.value)}")` }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-url-token
+/*
 function BadURLToken() { return this }
 BadURLToken.prototype = Object.create(CSSParserToken.prototype)
 BadURLToken.prototype.tokenType = 'BADURL'
+*/
+class BadURLToken extends CSSParserToken {
+  tokenType = 'BADURL'
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-delim-token
+/*
 function DelimToken(code) {
   this.value = stringFromCode(code)
   return this
@@ -1080,8 +1236,35 @@ DelimToken.prototype.toSource = function() {
     return this.value
   }
 }
+*/
+class DelimToken extends CSSParserToken {
+  tokenType = 'DELIM'
+
+  constructor(value) {
+    super()
+
+    this.value = stringFromCode(value)
+  }
+  toString() { return `DELIM(${this.value})` }
+  toSource() {
+    if (this.value === '\\') {
+      return '\\\n'
+    }
+
+    else {
+      return this.value
+    }
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-number-token
+/*
 function NumberToken() {
   this.value = null
   this.type = 'integer'
@@ -1105,8 +1288,37 @@ NumberToken.prototype.toJSON = function() {
   return json
 }
 NumberToken.prototype.toSource = function() { return this.repr }
+*/
+class NumberToken extends CSSParserToken {
+  tokenType = 'NUMBER'
+
+  constructor() {
+    super()
+
+    this.value = null
+    this.type = 'integer'
+    this.repr = ''
+  }
+  toString() {
+    if (this.type === 'integer') {
+      return `INT(${this.value})`
+    }
+
+    return `NUMBER(${this.value})`
+  }
+  toSource() { return this.repr }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value,
+      type: this.type,
+      repr: this.repr
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-percentage-token
+/*
 function PercentageToken() {
   this.value = null
   this.repr = ''
@@ -1122,8 +1334,29 @@ PercentageToken.prototype.toJSON = function() {
   return json
 }
 PercentageToken.prototype.toSource = function() { return this.repr + '%' }
+*/
+class PercentageToken extends CSSParserToken {
+  tokenType = 'PERCENTAGE'
+
+  constructor() {
+    super()
+
+    this.value = null
+    this.repr = ''
+  }
+  toString() { return `PERCENTAGE(${this.value})` }
+  toSource() { return this.repr + '%' }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value,
+      repr: this.repr
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-dimension-token
+/*
 function DimensionToken() {
   this.value = null
   this.type = 'integer'
@@ -1160,42 +1393,143 @@ DimensionToken.prototype.toSource = function() {
 
   return source + unit
 }
+*/
+class DimensionToken extends CSSParserToken {
+  tokenType = 'DIMENSION'
+
+  constructor() {
+    super()
+
+    this.value = null
+    this.type = 'integer'
+    this.repr = ''
+    this.unit = ''
+  }
+  toString() {
+    const source = this.repr
+    let unit = escapeIdent(this.unit)
+
+    if (
+      unit[0].toLowerCase() === 'e'
+      && (
+        unit[1] === '-'
+        || digit(unit.charCodeAt(1))
+      )
+    ) {
+      // Unit is ambiguous with scientific notation
+      // Remove the leading "e", replace with escape
+      unit = '\\65 ' + unit.slice(1, unit.length)
+    }
+
+    return source + unit
+  }
+  toSource() { return `DIM(${this.value},${this.unit})` }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      value: this.value,
+      type: this.type,
+      repr: this.repr,
+      unit: this.unit
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-whitespace-token
+/*
 function WhitespaceToken() { return this }
 WhitespaceToken.prototype = Object.create(CSSParserToken.prototype)
 WhitespaceToken.prototype.tokenType = 'WHITESPACE'
 WhitespaceToken.prototype.toString = function() { return 'WS' }
 WhitespaceToken.prototype.toSource = function() { return ' ' }
+*/
+class WhitespaceToken extends CSSParserToken {
+  tokenType = 'WHITESPACE'
+
+  constructor() {
+    super()
+  }
+  toString() { return 'WS' }
+  toSource() { return ' ' }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdo-token
+/*
 function CDOToken() { return this }
 CDOToken.prototype = Object.create(CSSParserToken.prototype)
 CDOToken.prototype.tokenType = 'CDO'
 CDOToken.prototype.toSource = function() { return '<!--' }
+*/
+class CDOToken extends CSSParserToken {
+  tokenType = 'CDO'
+
+  constructor() {
+    super()
+  }
+  toSource() { return '<!--' }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdc-token
+/*
 function CDCToken() { return this }
 CDCToken.prototype = Object.create(CSSParserToken.prototype)
 CDCToken.prototype.tokenType = 'CDC'
 CDCToken.prototype.toSource = function() { return '-->' }
+*/
+class CDCToken extends CSSParserToken {
+  tokenType = 'CDC'
+
+  constructor() {
+    super()
+  }
+
+  toSource() { return '-->' }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-colon-token
+/*
 function ColonToken() { return this }
 ColonToken.prototype = Object.create(CSSParserToken.prototype)
 ColonToken.prototype.tokenType = ':'
+*/
+class ColonToken extends CSSParserToken {
+  tokenType = ':'
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-semicolon-token
+/*
 function SemicolonToken() { return this }
 SemicolonToken.prototype = Object.create(CSSParserToken.prototype)
 SemicolonToken.prototype.tokenType = ';'
+*/
+class SemicolonToken extends CSSParserToken {
+  tokenType = ';'
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-comma-token
+/*
 function CommaToken() { return this }
 CommaToken.prototype = Object.create(CSSParserToken.prototype)
 CommaToken.prototype.tokenType = ','
+*/
+class CommaToken extends CSSParserToken {
+  tokenType = ','
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-square
+/*
 function OpenSquareToken() {
   this.value = '['
   this.mirror = ']'
@@ -1203,8 +1537,20 @@ function OpenSquareToken() {
 }
 OpenSquareToken.prototype = Object.create(GroupingToken.prototype)
 OpenSquareToken.prototype.tokenType = '['
+*/
+class OpenSquareToken extends GroupingToken {
+  tokenType = '['
+
+  constructor() {
+    super()
+
+    this.value = '['
+    this.mirror = ']'
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-square
+/*
 function CloseSquareToken() {
   this.value = ']'
   this.mirror = '['
@@ -1212,8 +1558,20 @@ function CloseSquareToken() {
 }
 CloseSquareToken.prototype = Object.create(GroupingToken.prototype)
 CloseSquareToken.prototype.tokenType = ']'
+*/
+class CloseSquareToken extends GroupingToken {
+  tokenType = ']'
+
+  constructor() {
+    super()
+
+    this.value = ']'
+    this.mirror = '['
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-paren
+/*
 function OpenParenToken() {
   this.value = '('
   this.mirror = ')'
@@ -1221,8 +1579,20 @@ function OpenParenToken() {
 }
 OpenParenToken.prototype = Object.create(GroupingToken.prototype)
 OpenParenToken.prototype.tokenType = '('
+*/
+class OpenParenToken extends GroupingToken {
+  tokenType = '('
+
+  constructor() {
+    super()
+
+    this.value = '('
+    this.mirror = ')'
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-paren
+/*
 function CloseParenToken() {
   this.value = ')'
   this.mirror = '('
@@ -1230,8 +1600,20 @@ function CloseParenToken() {
 }
 CloseParenToken.prototype = Object.create(GroupingToken.prototype)
 CloseParenToken.prototype.tokenType = ')'
+*/
+class CloseParenToken extends GroupingToken {
+  tokenType = ')'
+
+  constructor() {
+    super()
+
+    this.value = ')'
+    this.mirror = '('
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-curly
+/*
 function OpenCurlyToken() {
   this.value = '{'
   this.mirror = '}'
@@ -1239,8 +1621,20 @@ function OpenCurlyToken() {
 }
 OpenCurlyToken.prototype = Object.create(GroupingToken.prototype)
 OpenCurlyToken.prototype.tokenType = '{'
+*/
+class OpenCurlyToken extends GroupingToken {
+  tokenType = '{'
+
+  constructor() {
+    super()
+
+    this.value = '{'
+    this.mirror = '}'
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-curly
+/*
 function CloseCurlyToken() {
   this.value = '}'
   this.mirror = '{'
@@ -1248,44 +1642,128 @@ function CloseCurlyToken() {
 }
 CloseCurlyToken.prototype = Object.create(GroupingToken.prototype)
 CloseCurlyToken.prototype.tokenType = '}'
+*/
+class CloseCurlyToken extends GroupingToken {
+  tokenType = '}'
+
+  constructor() {
+    super()
+
+    this.value = '}'
+    this.mirror = '{'
+  }
+}
 
 // Misc tokens
+/*
 function IncludeMatchToken() { return this }
 IncludeMatchToken.prototype = Object.create(CSSParserToken.prototype)
 IncludeMatchToken.prototype.tokenType = '~='
+*/
+class IncludeMatchToken extends CSSParserToken {
+  tokenType = '~='
 
+  constructor() {
+    super()
+  }
+}
+
+/*
 function DashMatchToken() { return this }
 DashMatchToken.prototype = Object.create(CSSParserToken.prototype)
 DashMatchToken.prototype.tokenType = '|='
+*/
+class DashMatchToken extends CSSParserToken {
+  tokenType = '|='
 
+  constructor() {
+    super()
+  }
+}
+
+/*
 function PrefixMatchToken() { return this }
 PrefixMatchToken.prototype = Object.create(CSSParserToken.prototype)
 PrefixMatchToken.prototype.tokenType = '^='
+*/
+class PrefixMatchToken extends CSSParserToken {
+  tokenType = '^='
 
+  constructor() {
+    super()
+  }
+}
+
+/*
 function SuffixMatchToken() { return this }
 SuffixMatchToken.prototype = Object.create(CSSParserToken.prototype)
 SuffixMatchToken.prototype.tokenType = '$='
+*/
+class SuffixMatchToken extends CSSParserToken {
+  tokenType = '$='
 
+  constructor() {
+    super()
+  }
+}
+
+/*
 function SubstringMatchToken() { return this }
 SubstringMatchToken.prototype = Object.create(CSSParserToken.prototype)
 SubstringMatchToken.prototype.tokenType = '*='
+*/
+class SubstringMatchToken extends CSSParserToken {
+  tokenType = '*='
 
+  constructor() {
+    super()
+  }
+}
+
+/*
 function ColumnToken() { return this }
 ColumnToken.prototype = Object.create(CSSParserToken.prototype)
 ColumnToken.prototype.tokenType = '||'
+*/
+class ColumnToken extends CSSParserToken {
+  tokenType = '||'
+
+  constructor() {
+    super()
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-eof-token
+/*
 function EOFToken() { return this }
 EOFToken.prototype = Object.create(CSSParserToken.prototype)
 EOFToken.prototype.tokenType = 'EOF'
 EOFToken.prototype.toSource = function() { return '' }
+*/
+class EOFToken extends CSSParserToken {
+  tokenType = 'EOF'
+
+  constructor() {
+    super()
+  }
+  toSource() { return '' }
+}
 
 // Escaping functions
+/*
 function InvalidCharacterError(message) {
   this.message = message
 }
 InvalidCharacterError.prototype = new Error
 InvalidCharacterError.prototype.name = 'InvalidCharacterError'
+*/
+class InvalidCharacterError extends Error {
+  name = 'InvalidCharacterError'
+
+  constructor(value) {
+    this.message = value
+  }
+}
 
 const escapeIdent = (str = '') => {
   str = '' + str
@@ -1402,6 +1880,7 @@ const escapeString = (str = '') => {
 }
 
 // Token stream
+/*
 function TokenStream(tokens = []) {
   this.tokens = tokens
   this.i = -1
@@ -1428,6 +1907,32 @@ TokenStream.prototype.next = function() {
 }
 TokenStream.prototype.reconsume = function() {
   this.i--
+}
+*/
+class TokenStream {
+  constructor(value = []) {
+    this.tokens = value
+    this.i = -1
+  }
+  tokenAt(i) {
+    if (i < this.tokens.length) {
+      return this.tokens[i]
+    }
+
+    return new EOFToken()
+  }
+  consume(num) {
+    if (num === undefined) {
+      num = 1
+    }
+
+    this.i += num
+    this.token = this.tokenAt(this.i)
+
+    return true
+  }
+  next() { return this.tokenAt(this.i + 1) }
+  reconsume() { this.i-- }
 }
 
 const parseerror = (s, msg) => {
@@ -1893,6 +2398,7 @@ export const parseACommaSeparatedListOfComponentValues = (str = '') => {
 }
 
 // Parser objects
+/*
 function CSSParserRule() { throw 'Abstract Base Class' }
 CSSParserRule.prototype.toString = function(indent) {
   return JSON.stringify(this, null, indent)
@@ -1900,16 +2406,38 @@ CSSParserRule.prototype.toString = function(indent) {
 CSSParserRule.prototype.toJSON = function() {
   return {type: this.type, value: this.value}
 }
+*/
+class CSSParserRule {
+  constructor () {
+    if (this.constructor === CSSParserRule) {
+      throw new Error("Can't instantiate abstract class");
+    }
+  }
+  toString(value) { return JSON.stringify(this, null, value) }
+  toJSON() { return {type: this.type, value: this.value} }
+}
 
 // https://drafts.csswg.org/css-syntax/#typedef-stylesheet
+/*
 function Stylesheet() {
   this.value = []
   return this
 }
 Stylesheet.prototype = Object.create(CSSParserRule.prototype)
 Stylesheet.prototype.type = 'STYLESHEET'
+*/
+class Stylesheet extends CSSParserRule {
+  type = 'STYLESHEET'
+
+  constructor() {
+    super()
+
+    this.value = []
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#at-rule
+/*
 function AtRule(name) {
   this.name = name
   this.prelude = []
@@ -1926,8 +2454,28 @@ AtRule.prototype.toJSON = function() {
 
   return json
 }
+*/
+class AtRule extends CSSParserRule {
+  type = 'AT-RULE'
+
+  constructor(value) {
+    super()
+
+    this.name = value
+    this.prelude = []
+    this.value = null
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      name: this.name,
+      prelude: this.prelude
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#qualified-rule
+/*
 function QualifiedRule() {
   this.prelude = []
   this.value = []
@@ -1942,8 +2490,26 @@ QualifiedRule.prototype.toJSON = function() {
 
   return json
 }
+*/
+class QualifiedRule extends CSSParserRule {
+  type = 'QUALIFIED-RULE'
+
+  constructor() {
+    super()
+
+    this.prelude = []
+    this.value = []
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      prelude: this.prelude
+    }
+  }
+}
 
 // https://drafts.csswg.org/css-syntax/#declaration
+/*
 function Declaration(name) {
   this.name = name
   this.value = []
@@ -1960,7 +2526,27 @@ Declaration.prototype.toJSON = function() {
 
   return json
 }
+*/
+class Declaration extends CSSParserRule {
+  type = 'DECLARATION'
 
+  constructor(value) {
+    super()
+
+    this.name = value
+    this.value = []
+    this.important = false
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      name: this.name,
+      important: this.important
+    }
+  }
+}
+
+/*
 function SimpleBlock(type) {
   this.name = type
   this.value = []
@@ -1975,7 +2561,25 @@ SimpleBlock.prototype.toJSON = function() {
 
   return json
 }
+*/
+class SimpleBlock extends CSSParserRule {
+  type = 'BLOCK'
 
+  constructor(value) {
+    super()
+
+    this.name = value
+    this.value = []
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      name: this.name
+    }
+  }
+}
+
+/*
 function Func(name) {
   this.name = name
   this.value = []
@@ -1989,6 +2593,23 @@ Func.prototype.toJSON = function() {
   json.name = this.name
 
   return json
+}
+*/
+class Func extends CSSParserRule {
+  type = 'FUNCTION'
+
+  constructor(value) {
+    super()
+
+    this.name = value
+    this.value = []
+  }
+  toJSON() {
+    return {
+      ...super.toJSON(),
+      name: this.name
+    }
+  }
 }
 
 // Canonicalization function
