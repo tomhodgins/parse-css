@@ -2022,32 +2022,13 @@ export const parseACommaSeparatedListOfComponentValues = (str = '') => {
 }
 
 // Parser objects
-const flattenTokens = (tokens = []) => {
+const flattenTokens = (tokens = [], joinString = '') => {
   if (
     Array.isArray(tokens)
   ) {
     return tokens
       .map(token => token.toSource())
-      .join('')
-  } else if (!tokens) {
-    return ';'
-  } else {
-    try {
-      return tokens.toSource()
-    } catch (error) {
-      console.log(tokens, error)
-      return 'error'
-    }
-  }
-}
-
-const spaceTokens = (tokens = []) => {
-  if (
-    Array.isArray(tokens)
-  ) {
-    return tokens
-      .map(token => token.toSource())
-      .join(' ')
+      .join(joinString)
   } else if (!tokens) {
     return ';'
   } else {
@@ -2080,7 +2061,7 @@ class Stylesheet extends CSSParserRule {
 
     this.value = []
   }
-  toSource() { return spaceTokens(this.value).trim() }
+  toSource() { return flattenTokens(this.value, ' ').trim() }
 }
 
 // https://drafts.csswg.org/css-syntax/#at-rule
