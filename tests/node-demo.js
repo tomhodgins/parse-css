@@ -1,4 +1,4 @@
-// parse-css deno demo
+// parse-css node demo
 const parseCSS = require('../index.cjs.js')
 
 console.log(
