@@ -8,7 +8,8 @@
 <script type=module>
   import {parseAStylesheet} from '../index.js'
 
-  console.log(
-    parseAStylesheet('div { color: lime }')
-  )
+  const ast = parseAStylesheet('div { color: lime }')
+
+  console.log(ast.toSource())
+  console.log(ast)
 </script>

@@ -1,10 +1,6 @@
 // parse-css deno demo
 import {parseAStylesheet} from '../index.js'
+const ast = parseCSS.parseAStylesheet('div { color: lime }')
 
-console.log(
-  JSON.stringify(
-    parseAStylesheet('div { color: lime }'),
-    null,
-    2
-  )
-)
+console.log(ast.toSource())
+console.log(ast)

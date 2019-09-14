@@ -987,11 +987,10 @@ class GroupingToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-ident-token
 class IdentToken extends StringValuedToken {
-  tokenType = 'IDENT'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'IDENT'
     this.value = value
   }
   toString() { return `IDENT(${this.value})` }
@@ -1000,12 +999,11 @@ class IdentToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-function-token
 class FunctionToken extends StringValuedToken {
-  tokenType = 'FUNCTION'
-  mirror = ')'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'FUNCTION'
+    this.mirror = ')'
     this.value = value
   }
   toString() { return `FUNCTION(${this.value})` }
@@ -1014,11 +1012,10 @@ class FunctionToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-at-keyword-token
 class AtKeywordToken extends StringValuedToken {
-  tokenType = 'AT-KEYWORD'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'AT-KEYWORD'
     this.value = value
   }
   toString() { return `AT(${this.value})` }
@@ -1027,13 +1024,12 @@ class AtKeywordToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-hash-token
 class HashToken extends StringValuedToken {
-  tokenType = 'HASH'
-
   constructor(value) {
     super()
 
-    this.value = value
+    this.tokenType = 'HASH'
     this.type = 'unrestricted'
+    this.value = value
   }
   toString() { return `HASH(${this.value})` }
   toSource() {
@@ -1056,11 +1052,10 @@ class HashToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-string-token
 class StringToken extends StringValuedToken {
-  tokenType = 'STRING'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'STRING'
     this.value = value
   }
   toString() { return `"${escapeString(this.value)}"` }
@@ -1069,20 +1064,19 @@ class StringToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-string-token
 class BadStringToken extends CSSParserToken {
-  tokenType = 'BADSTRING'
-
   constructor() {
     super()
+
+    this.tokenType = 'BADSTRING'
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-url-token
 class URLToken extends StringValuedToken {
-  tokenType = 'URL'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'URL'
     this.value = value
   }
   toString() { return `URL(${this.value})` }
@@ -1091,20 +1085,19 @@ class URLToken extends StringValuedToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-bad-url-token
 class BadURLToken extends CSSParserToken {
-  tokenType = 'BADURL'
-
   constructor() {
     super()
+
+    this.tokenType = 'BADURL'
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-delim-token
 class DelimToken extends CSSParserToken {
-  tokenType = 'DELIM'
-
   constructor(value) {
     super()
 
+    this.tokenType = 'DELIM'
     this.value = stringFromCode(value)
   }
   toString() { return `DELIM(${this.value})` }
@@ -1127,11 +1120,10 @@ class DelimToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-number-token
 class NumberToken extends CSSParserToken {
-  tokenType = 'NUMBER'
-
   constructor() {
     super()
 
+    this.tokenType = 'NUMBER'
     this.value = null
     this.type = 'integer'
     this.repr = ''
@@ -1156,11 +1148,10 @@ class NumberToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-percentage-token
 class PercentageToken extends CSSParserToken {
-  tokenType = 'PERCENTAGE'
-
   constructor() {
     super()
 
+    this.tokenType = 'PERCENTAGE'
     this.value = null
     this.repr = ''
   }
@@ -1177,11 +1168,10 @@ class PercentageToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-dimension-token
 class DimensionToken extends CSSParserToken {
-  tokenType = 'DIMENSION'
-
   constructor() {
     super()
 
+    this.tokenType = 'DIMENSION'
     this.value = null
     this.type = 'integer'
     this.repr = ''
@@ -1219,10 +1209,10 @@ class DimensionToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-whitespace-token
 class WhitespaceToken extends CSSParserToken {
-  tokenType = 'WHITESPACE'
-
   constructor() {
     super()
+
+    this.tokenType = 'WHITESPACE'
   }
   toString() { return 'WS' }
   toSource() { return ' ' }
@@ -1230,20 +1220,20 @@ class WhitespaceToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdo-token
 class CDOToken extends CSSParserToken {
-  tokenType = 'CDO'
-
   constructor() {
     super()
+
+    this.tokenType = 'CDO'
   }
   toSource() { return '<!--' }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-cdc-token
 class CDCToken extends CSSParserToken {
-  tokenType = 'CDC'
-
   constructor() {
     super()
+
+    this.tokenType = 'CDC'
   }
 
   toSource() { return '-->' }
@@ -1251,38 +1241,37 @@ class CDCToken extends CSSParserToken {
 
 // https://drafts.csswg.org/css-syntax/#typedef-colon-token
 class ColonToken extends CSSParserToken {
-  tokenType = ':'
-
   constructor() {
     super()
+
+    this.tokenType = ':'
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-semicolon-token
 class SemicolonToken extends CSSParserToken {
-  tokenType = ';'
-
   constructor() {
     super()
+
+    this.tokenType = ';'
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-comma-token
 class CommaToken extends CSSParserToken {
-  tokenType = ','
-
   constructor() {
     super()
+
+    this.tokenType = ','
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-square
 class OpenSquareToken extends GroupingToken {
-  tokenType = '['
-
   constructor() {
     super()
 
+    this.tokenType = '['
     this.value = '['
     this.mirror = ']'
   }
@@ -1290,11 +1279,10 @@ class OpenSquareToken extends GroupingToken {
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-square
 class CloseSquareToken extends GroupingToken {
-  tokenType = ']'
-
   constructor() {
     super()
 
+    this.tokenType = ']'
     this.value = ']'
     this.mirror = '['
   }
@@ -1302,11 +1290,10 @@ class CloseSquareToken extends GroupingToken {
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-paren
 class OpenParenToken extends GroupingToken {
-  tokenType = '('
-
   constructor() {
     super()
 
+    this.tokenType = '('
     this.value = '('
     this.mirror = ')'
   }
@@ -1314,11 +1301,10 @@ class OpenParenToken extends GroupingToken {
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-paren
 class CloseParenToken extends GroupingToken {
-  tokenType = ')'
-
   constructor() {
     super()
 
+    this.tokenType = ')'
     this.value = ')'
     this.mirror = '('
   }
@@ -1326,11 +1312,10 @@ class CloseParenToken extends GroupingToken {
 
 // https://drafts.csswg.org/css-syntax/#tokendef-open-curly
 class OpenCurlyToken extends GroupingToken {
-  tokenType = '{'
-
   constructor() {
     super()
 
+    this.tokenType = '{'
     this.value = '{'
     this.mirror = '}'
   }
@@ -1338,11 +1323,10 @@ class OpenCurlyToken extends GroupingToken {
 
 // https://drafts.csswg.org/css-syntax/#tokendef-close-curly
 class CloseCurlyToken extends GroupingToken {
-  tokenType = '}'
-
   constructor() {
     super()
 
+    this.tokenType = '}'
     this.value = '}'
     this.mirror = '{'
   }
@@ -1350,71 +1334,70 @@ class CloseCurlyToken extends GroupingToken {
 
 // https://drafts.csswg.org/selectors-4/#attribute-representation
 class IncludeMatchToken extends CSSParserToken {
-  tokenType = '~='
-
   constructor() {
     super()
+
+    this.tokenType = '~='
   }
 }
 
 class DashMatchToken extends CSSParserToken {
-  tokenType = '|='
-
   constructor() {
     super()
+
+    this.tokenType = '|='
   }
 }
 
 // https://drafts.csswg.org/selectors-4/#attribute-substrings
 class PrefixMatchToken extends CSSParserToken {
-  tokenType = '^='
-
   constructor() {
     super()
+
+    this.tokenType = '^='
   }
 }
 
 class SuffixMatchToken extends CSSParserToken {
-  tokenType = '$='
-
   constructor() {
     super()
+
+    this.tokenType = '$='
   }
 }
 
 class SubstringMatchToken extends CSSParserToken {
-  tokenType = '*='
-
   constructor() {
     super()
+
+    this.tokenType = '*='
   }
 }
 
 // https://drafts.csswg.org/selectors-4/#the-column-combinator
 class ColumnToken extends CSSParserToken {
-  tokenType = '||'
-
   constructor() {
     super()
+
+    this.tokenType = '||'
   }
 }
 
 // https://drafts.csswg.org/css-syntax/#typedef-eof-token
 class EOFToken extends CSSParserToken {
-  tokenType = 'EOF'
-
   constructor() {
     super()
+
+    this.tokenType = 'EOF'
   }
   toSource() { return '' }
 }
 
 // Escaping functions
 class InvalidCharacterError extends Error {
-  name = 'InvalidCharacterError'
-
   constructor(value) {
     this.message = value
+    this.name = 'InvalidCharacterError'
   }
 }
 
@@ -2054,11 +2037,10 @@ class CSSParserRule {
 
 // https://drafts.csswg.org/css-syntax/#typedef-stylesheet
 class Stylesheet extends CSSParserRule {
-  type = 'STYLESHEET'
-
   constructor() {
     super()
 
+    this.type = 'STYLESHEET'
     this.value = []
   }
   toSource() { return flattenTokens(this.value, ' ').trim() }
@@ -2066,11 +2048,10 @@ class Stylesheet extends CSSParserRule {
 
 // https://drafts.csswg.org/css-syntax/#at-rule
 class AtRule extends CSSParserRule {
-  type = 'AT-RULE'
-
   constructor(value) {
     super()
 
+    this.type = 'AT-RULE'
     this.name = value
     this.prelude = []
     this.value = null
@@ -2089,11 +2070,10 @@ class AtRule extends CSSParserRule {
 
 // https://drafts.csswg.org/css-syntax/#qualified-rule
 class QualifiedRule extends CSSParserRule {
-  type = 'QUALIFIED-RULE'
-
   constructor() {
     super()
 
+    this.type = 'QUALIFIED-RULE'
     this.prelude = []
     this.value = []
   }
@@ -2110,11 +2090,10 @@ class QualifiedRule extends CSSParserRule {
 
 // https://drafts.csswg.org/css-syntax/#declaration
 class Declaration extends CSSParserRule {
-  type = 'DECLARATION'
-
   constructor(value) {
     super()
 
+    this.type = 'DECLARATION'
     this.name = value
     this.value = []
     this.important = false
@@ -2132,11 +2111,10 @@ class Declaration extends CSSParserRule {
 }
 
 class SimpleBlock extends CSSParserRule {
-  type = 'BLOCK'
-
   constructor(value) {
     super()
 
+    this.type = 'BLOCK'
     this.name = value
     this.value = []
     this.mirror = ({
@@ -2157,11 +2135,10 @@ class SimpleBlock extends CSSParserRule {
 }
 
 class Func extends CSSParserRule {
-  type = 'FUNCTION'
-
   constructor(value) {
     super()
 
+    this.type = 'FUNCTION'
     this.name = value
     this.value = []
   }
