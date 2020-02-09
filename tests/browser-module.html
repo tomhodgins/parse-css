@@ -6,10 +6,35 @@
 (check the browser’s console…)
 
 <script type=module>
-  import {parseAStylesheet} from '../index.js'
+  import {parseAStylesheet, CSSGrammar, canonicalize} from '../index.js'
 
   const ast = parseAStylesheet('div { color: lime }')
 
   console.log(ast.toSource())
   console.log(ast)
+
+  console.log(
+    canonicalize(
+      parseAStylesheet(`
+        @truly-unknown a { b { c: d; }}
+        @import url('a.css');
+        @--reset;
+        @--reset div;
+        @--element div and (min-width: 500px) { :--self { color: orange; }}
+        @--document regexp(basic) { a { color: lime; } }
+        @--important { b { color: hotpink; } }
+        @--variation 1 { c { color: teal; } }
+      `),
+      Object.assign(
+        CSSGrammar,
+        {
+          '@--reset': null,
+          '@--element': {stylesheet: true},
+          '@--document': {stylesheet: true},
+          '@--important': {stylesheet: true},
+          '@--variation': {stylesheet: true},
+        }
+      )
+    )
+  )
 </script>

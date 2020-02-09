@@ -1643,7 +1643,7 @@
       const rule = new QualifiedRule()
       while (str.consume()) {
         if (str.token instanceof EOFToken) {
-          parseerror(str, 'Hit EOF when trying to parse the prelude of a qualified rule.')
+          //parseerror(str, 'Hit EOF when trying to parse the prelude of a qualified rule.')
           return
         }
 
