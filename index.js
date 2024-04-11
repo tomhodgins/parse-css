@@ -1195,7 +1195,7 @@ class DimensionToken extends CSSParserToken {
 
     return source + unit
   }
-  toSource() { return `${String(this.value).replace(/0+\./, '.')}${this.unit}` }
+  toSource() { return `${String(this.value).replace(/^0+\./, '.')}${this.unit}` }
   toJSON() {
     return {
       ...super.toJSON(),
